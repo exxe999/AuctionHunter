@@ -1,0 +1,9 @@
+name: AuctionHunter
+main: de.exxe.AuctionHunter.Main.Main
+version: 0.1
+author: exxe
+commands:
+    auction:
+        aliases: [a,auktion]
+    bid:
+        aliases: [bieten,b]
