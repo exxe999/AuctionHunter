@@ -5,7 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import de.exxe.AuctionHunter.CustomConfig.CustomConfig;
 import de.exxe.AuctionHunter.EventHandler.GuiEvents;
-import de.exxe.AuctionHunter.GUI.AuctionGUI;
+import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.Commands.Commands;
 
 public class Main extends JavaPlugin{
@@ -17,7 +17,7 @@ public class Main extends JavaPlugin{
 		
 		getCommand("auction").setExecutor(new Commands(this));
 		getCommand("bid").setExecutor(new Commands(this));
-		Bukkit.getPluginManager().registerEvents(new GuiEvents(new AuctionGUI(this)), this);
+		Bukkit.getPluginManager().registerEvents(new GuiEvents(new StartGUI(this),this), this);
 		config = new CustomConfig(this);
 		reloadAllConfigs();
 		

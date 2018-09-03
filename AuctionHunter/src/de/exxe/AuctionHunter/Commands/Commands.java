@@ -5,14 +5,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.exxe.AuctionHunter.GUI.AuctionGUI;
+import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.Main.Main;
 
 
 public class Commands implements CommandExecutor {
 	
 	public Main main;
-	public AuctionGUI auctionGUI;
+	public StartGUI startGUI;
 	
 	public Commands(Main main) {
 		this.main = main;
@@ -31,8 +31,10 @@ public class Commands implements CommandExecutor {
 		if(cmd.getName().equalsIgnoreCase("auction")) {
 			if(args.length >= 1) {
 				if(args[0].equalsIgnoreCase("start")) {
+					main.getCustomConfig().get().set("auctionStartValue" + "." + player.getUniqueId(), 1);
+					main.getCustomConfig().saveConfig();
 					sender.sendMessage("starte GUI");
-					new AuctionGUI(main).openAuctionGUI(player);
+					new StartGUI(main).openStartGUI(player);
 					return true;
 				}
 				else if(args[0].equalsIgnoreCase("info")) {

@@ -5,51 +5,77 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.exxe.AuctionHunter.GUI.AuctionChest;
-import de.exxe.AuctionHunter.GUI.AuctionGUI;
+import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.GUI.ItemManager;
+import de.exxe.AuctionHunter.Main.Main;
 
 public class GuiEvents implements Listener {
 
-	private AuctionGUI gui;
+	private Main main;
+	private AuctionChest auctionChest;
 
-	public GuiEvents(AuctionGUI gui) {
-		this.gui = gui;
+	public GuiEvents(StartGUI gui, Main main) {
+		this.main = main;
 	}
 
 	@EventHandler
 	public void onInventoryClickItem(InventoryClickEvent event) {
+		
 		Inventory eInv = event.getView().getTopInventory();
 		Player player = (Player) event.getWhoClicked();
 		ItemStack item = event.getCurrentItem();
+		auctionChest = new AuctionChest(main);
 		
 		if(item == null) {
 			event.setCancelled(true);
 			return;
 		}
-		
+		//Events in Auktion Start
 		if (eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lAuktion"))) {
+			int startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
 			if (item.hasItemMeta()) {
 				if (event.getRawSlot() == 24) {
-					ItemManager.increaseStart(event.getInventory());
+					if(startValue < 30) {
+						new ItemManager(main).increaseStart(event.getInventory());
+					}else {
+						player.sendMessage("maximum");
+					}
 					event.setCancelled(true);
 				}else if (event.getRawSlot() == 42) {
-					ItemManager.decreaseStart(event.getInventory());
+					if(startValue > 0) {
+						new ItemManager(main).decreaseStart(event.getInventory());
+					}else {
+						player.sendMessage("minimum");
+					}
 					event.setCancelled(true);
 				}else if(event.getRawSlot() == 0) {
-					new AuctionChest().openAuctionChest(player);
+					new AuctionChest(main).openAuctionChest(player);
 				}else {
 					event.setCancelled(true);
 				}
 			}
 			event.setCancelled(true);
 		}
+		//Events in Auktionskiste
 		else if(eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lDeine Auktionskiste"))) {
-			if(event.getSlot() > 26 ) {
+			if(event.getRawSlot() > 26 &&  event.getRawSlot() < 45) {
+				if(event.getRawSlot() == 38) {
+					auctionChest.deleteAuctionChest(player);
+					new StartGUI(main).openStartGUI(player);
+					event.setCancelled(true);
+				}
+				if(event.getRawSlot() == 42) {
+					player.sendMessage("gespeichert");
+					auctionChest.safeAuctionChest(player);
+					new StartGUI(main).openStartGUI(player);
+					event.setCancelled(true);
+				}
 				event.setCancelled(true);
 			}
 
@@ -59,13 +85,26 @@ public class GuiEvents implements Listener {
 
 	@EventHandler
 	public void onInventoryDrag(InventoryDragEvent event) {
-		System.out.println("drag");
 		Inventory eInv = event.getView().getTopInventory();
+		//Events in Auktion Start
 		if (eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lAuktion"))) {
 			event.setCancelled(true);
 		}
+		//Events in Auktionskiste
 		if(eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lDeine Auktionskiste"))) {
-
+			for(int i=27;i < 45;i++) {
+				if(event.getRawSlots().contains(i)) {
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		Inventory eInv = event.getView().getTopInventory();
+		if(eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lDeine Auktionskiste"))) {
+			auctionChest.forceSafeAuctionChest((Player) event.getPlayer());
 		}
 	}
 	
