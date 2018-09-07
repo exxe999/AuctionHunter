@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import de.exxe.AuctionHunter.AuctionHandler.Auction;
 import de.exxe.AuctionHunter.GUI.AuctionChest;
 import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.GUI.ItemManager;
@@ -39,23 +40,28 @@ public class GuiEvents implements Listener {
 		//Events in Auktion Start
 		if (eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lAuktion"))) {
 			int startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
+			int slot =  event.getRawSlot();
 			if (item.hasItemMeta()) {
-				if (event.getRawSlot() == 24) {
+				if (slot == 24) {
 					if(startValue < 30) {
 						new ItemManager(main).increaseStart(event.getInventory());
 					}else {
 						player.sendMessage("maximum");
 					}
 					event.setCancelled(true);
-				}else if (event.getRawSlot() == 42) {
+				}else if (slot == 42) {
 					if(startValue > 0) {
 						new ItemManager(main).decreaseStart(event.getInventory());
 					}else {
 						player.sendMessage("minimum");
 					}
 					event.setCancelled(true);
-				}else if(event.getRawSlot() == 0) {
+				}else if(slot == 0) {
 					new AuctionChest(main).openAuctionChest(player);
+				}else if(slot == 29 ||slot == 30 || slot == 38 ||slot == 39){
+					Auction auction = new Auction(main);
+					auction.setup(player);
+					auction.startAuction();
 				}else {
 					event.setCancelled(true);
 				}

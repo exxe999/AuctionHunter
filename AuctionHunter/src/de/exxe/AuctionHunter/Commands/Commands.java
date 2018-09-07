@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.exxe.AuctionHunter.AuctionHandler.Auction;
 import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.Main.Main;
 
@@ -51,8 +52,8 @@ public class Commands implements CommandExecutor {
 		}
 		else if(cmd.getName().equalsIgnoreCase("bid")) {
 			if(args.length == 1) {
+				new Auction(main).setHighestBid(player, Double.parseDouble(args[0]));
 				sender.sendMessage("starte gebot");
-				//start bid
 				return true;
 			}else {
 				sender.sendMessage("fehler");
