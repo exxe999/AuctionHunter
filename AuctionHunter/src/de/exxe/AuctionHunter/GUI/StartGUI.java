@@ -8,7 +8,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import de.exxe.AuctionHunter.Main.Main;
 
 public class StartGUI {
@@ -21,19 +20,20 @@ public class StartGUI {
 	private ItemStack buttonUp;
 	private ItemStack buttonDown;
 	private Player player;
-	private int startValue;
+	private double startValue;
 	public StartGUI(Main main) {
 		this.main = main;
 	}
 	
 	public void openStartGUI(Player player) {
 		this.player = player;
-		boolean hasAuctionChest = false;
-		hasAuctionChest = new AuctionChest(main).isEmpty(player);
+		boolean newAuctionChest = true;
+		newAuctionChest = new AuctionChest(main).isEmpty(player);
+		System.out.println(newAuctionChest);
 		
 		Inventory gui = Bukkit.createInventory(player, 45, ChatColor.translateAlternateColorCodes('&', "&8&lAuktion"));
 		
-		if(hasAuctionChest) {
+		if(newAuctionChest) {
 			prepareGeneralGUI();
 		}else {
 			prepareCustomGUI();
@@ -56,14 +56,14 @@ public class StartGUI {
 	}
 
 	private void prepareGeneralGUI() {
-		startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
+		startValue = main.getCustomConfig().get().getInt(player.getUniqueId() + "." + "auctionStartValue");
 		auctionChestItem = ItemManager.prepareItem("CHEST", ChatColor.translateAlternateColorCodes('&', "&aNeue Auktionskiste"));
 		startItem = ItemManager.prepareItem("STAINED_GLASS_PANE",ChatColor.translateAlternateColorCodes('&', "&cErstelle eine Auktionskiste!"));
 		startItem.setDurability((short) 14);	
 	}
 	
 	private void prepareCustomGUI() {
-		startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
+		startValue = main.getCustomConfig().get().getInt(player.getUniqueId()+ "." + "auctionStartValue" );
 		auctionChestItem = ItemManager.prepareItem("CHEST", ChatColor.translateAlternateColorCodes('&', "&aDeine Auktionskiste"));
 		auctionChestItem = ItemManager.setItemMeta(auctionChestItem, "Items gespeichert.");
 		startItem = ItemManager.prepareItem("STAINED_GLASS_PANE",ChatColor.translateAlternateColorCodes('&', "&a&lStarte Auktion"));
@@ -71,14 +71,14 @@ public class StartGUI {
 	}
 	
 	private void updateStartValueItems() {
-		if(startValue <= 30 && startValue >= 0) {
-			buttonUp = ItemManager.prepareItem("STONE_BUTTON",ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$ &8| &6\u25B2 &7Höher &6\u25B2"));
-			buttonDown = ItemManager.prepareItem("WOOD_BUTTON",ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$ &8| &6\u25BC &7Niedriger &6\u25BC"));
-			goldItem = ItemManager.prepareItem("GOLD_INGOT",ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$"));
+		if(startValue <= 300 && startValue >= 0) {
+			buttonUp = ItemManager.prepareItem("STONE_BUTTON",ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$ &8| &6\u25B2 &7Höher &6\u25B2"));
+			buttonDown = ItemManager.prepareItem("WOOD_BUTTON",ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$ &8| &6\u25BC &7Niedriger &6\u25BC"));
+			goldItem = ItemManager.prepareItem("GOLD_INGOT",ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$"));
 		}
 		
 		if(startValue != 0) {
-			goldItem.setAmount(startValue);
+			goldItem.setAmount((int) (startValue/10));
 		}else {
 			ItemMeta meta = goldItem.getItemMeta();
 			goldItem.setAmount(1);

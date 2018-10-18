@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.exxe.AuctionHunter.AuctionHandler.Auction;
+import de.exxe.AuctionHunter.GUI.AuctionClaim;
 import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.Main.Main;
 
@@ -32,14 +33,19 @@ public class Commands implements CommandExecutor {
 		if(cmd.getName().equalsIgnoreCase("auction")) {
 			if(args.length >= 1) {
 				if(args[0].equalsIgnoreCase("start")) {
-					main.getCustomConfig().get().set("auctionStartValue" + "." + player.getUniqueId(), 1);
+					main.getCustomConfig().get().set(player.getUniqueId() + "." + "auctionStartValue", 0);
 					main.getCustomConfig().saveConfig();
-					sender.sendMessage("starte GUI");
 					new StartGUI(main).openStartGUI(player);
 					return true;
 				}
 				else if(args[0].equalsIgnoreCase("info")) {
 					sender.sendMessage("zeige info gui an");
+					return true;
+				}else if(args[0].equalsIgnoreCase("pause")) {
+					sender.sendMessage("Pausiere Auktion");
+					return true;
+				}else if(args[0].equalsIgnoreCase("claim")){
+					new AuctionClaim(main).openAuctionClaim(player);
 					return true;
 				}else {
 					sender.sendMessage("/auktion");
@@ -52,8 +58,8 @@ public class Commands implements CommandExecutor {
 		}
 		else if(cmd.getName().equalsIgnoreCase("bid")) {
 			if(args.length == 1) {
-				new Auction(main).setHighestBid(player, Double.parseDouble(args[0]));
-				sender.sendMessage("starte gebot");
+				if(isNumeric(args[0])) main.getAuctionManager().getAuction().setHighestBid(player, Double.parseDouble(args[0]));
+				else player.sendMessage("Du musst eine Zahl angeben.");
 				return true;
 			}else {
 				sender.sendMessage("fehler");
@@ -64,6 +70,15 @@ public class Commands implements CommandExecutor {
 			return true;
 		}
 	
+	}
+	
+	public static boolean isNumeric(String strNum) {
+	    try {
+	        double d = Double.parseDouble(strNum);
+	    } catch (NumberFormatException | NullPointerException nfe) {
+	        return false;
+	    }
+	    return true;
 	}
 	
 }

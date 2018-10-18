@@ -33,17 +33,18 @@ public class GuiEvents implements Listener {
 		ItemStack item = event.getCurrentItem();
 		auctionChest = new AuctionChest(main);
 		
+		
 		if(item == null) {
 			event.setCancelled(true);
 			return;
 		}
 		//Events in Auktion Start
 		if (eInv.getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&lAuktion"))) {
-			int startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
+			double startValue = main.getCustomConfig().get().getDouble(player.getUniqueId() + "." + "auctionStartValue");
 			int slot =  event.getRawSlot();
 			if (item.hasItemMeta()) {
 				if (slot == 24) {
-					if(startValue < 30) {
+					if(startValue < 300) {
 						new ItemManager(main).increaseStart(event.getInventory());
 					}else {
 						player.sendMessage("maximum");
@@ -58,10 +59,13 @@ public class GuiEvents implements Listener {
 					event.setCancelled(true);
 				}else if(slot == 0) {
 					new AuctionChest(main).openAuctionChest(player);
+					event.setCancelled(true);
 				}else if(slot == 29 ||slot == 30 || slot == 38 ||slot == 39){
-					Auction auction = new Auction(main);
-					auction.setup(player);
-					auction.startAuction();
+					if(auctionChest.isEmpty(player)) {
+						player.sendMessage("Du brauchst eine Auktionskiste!");
+					}else {
+						main.getAuctionManager().startAuction(main, player);
+					}
 				}else {
 					event.setCancelled(true);
 				}

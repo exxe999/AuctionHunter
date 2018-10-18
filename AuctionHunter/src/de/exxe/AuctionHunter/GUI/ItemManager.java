@@ -17,7 +17,7 @@ import de.exxe.AuctionHunter.Main.Main;
 public class ItemManager {
 	
 	private Main main;
-	private int startValue;
+	private double startValue;
 	
 	public ItemManager(Main main) {
 		this.main = main;
@@ -44,25 +44,26 @@ public class ItemManager {
 		ItemStack oldItem;
 		ItemMeta meta;
 		Player player = (Player) gui.getHolder();
-		startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
-		if(startValue < 30) {
-			main.getCustomConfig().get().set("auctionStartValue" + "." + player.getUniqueId(), ++startValue);
+		startValue = main.getCustomConfig().get().getInt(player.getUniqueId() + "." + "auctionStartValue");
+		if(startValue < 300) {
+			main.getCustomConfig().get().set(player.getUniqueId() + "." + "auctionStartValue", startValue += 10);
+			main.getCustomConfig().saveConfig();
 		}
 		oldItem = gui.getItem(33);
 		meta = oldItem.getItemMeta();
 		if(meta.hasEnchants()) meta.removeEnchant(Enchantment.KNOCKBACK);
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$"));
 		oldItem.setItemMeta(meta);
-		oldItem.setAmount(startValue);
+		oldItem.setAmount((int) (startValue/10));
 		
 		oldItem = gui.getItem(24);
 		meta = oldItem.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$ &8| &6\u25B2 &7Höher &6\u25B2"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$ &8| &6\u25B2 &7Höher &6\u25B2"));
 		oldItem.setItemMeta(meta);
 		
 		oldItem = gui.getItem(42);
 		meta = oldItem.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$ &8| &6\u25BC &7Niedriger &6\u25BC"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$ &8| &6\u25BC &7Niedriger &6\u25BC"));
 		oldItem.setItemMeta(meta);
 	}
 	
@@ -70,16 +71,17 @@ public class ItemManager {
 		ItemStack oldItem;
 		ItemMeta meta;
 		Player player = (Player) gui.getHolder();
-		startValue = main.getCustomConfig().get().getInt("auctionStartValue" + "." + player.getUniqueId());
+		startValue = main.getCustomConfig().get().getInt(player.getUniqueId() + "." + "auctionStartValue");
 		if(startValue > 0) {
-			main.getCustomConfig().get().set("auctionStartValue" + "." + player.getUniqueId(), --startValue);
+			main.getCustomConfig().get().set(player.getUniqueId() + "." + "auctionStartValue", startValue -= 10);
+			main.getCustomConfig().saveConfig();
 		}
 		oldItem = gui.getItem(33);
 		meta = oldItem.getItemMeta();
 		if(meta.hasEnchants()) meta.removeEnchant(Enchantment.KNOCKBACK);
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$"));
 		if(startValue != 0) {
-			oldItem.setAmount(startValue);
+			oldItem.setAmount((int) (startValue/10));
 		}else {
 			oldItem.setAmount(1);
 			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -90,12 +92,12 @@ public class ItemManager {
 		
 		oldItem = gui.getItem(24);
 		meta = oldItem.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$ &8| &6\u25B2 &7Höher &6\u25B2"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$ &8| &6\u25B2 &7Höher &6\u25B2"));
 		oldItem.setItemMeta(meta);
 		
 		oldItem = gui.getItem(42);
 		meta = oldItem.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue * 10 + "$ &8| &6\u25BC &7Niedriger &6\u25BC"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&7Startwert: &6" + startValue + "$ &8| &6\u25BC &7Niedriger &6\u25BC"));
 		oldItem.setItemMeta(meta);
 	}
 

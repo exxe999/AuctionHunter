@@ -16,6 +16,7 @@ import de.exxe.AuctionHunter.Main.Main;
 public class AuctionChest {
 	
 	private Main main;
+	boolean isIntended;
 
 	public AuctionChest(Main main) {
 		this.main = main;
@@ -38,7 +39,7 @@ public class AuctionChest {
 		gui.setItem(42, saveItem);
 		gui.setItem(38, abortItem);
 		
-		List<?> items = main.getCustomConfig().get().getList("auctionChestItems" + "." + player.getUniqueId());
+		List<?> items = main.getCustomConfig().get().getList( player.getUniqueId() + "." + "auctionChestItems");
 		if(items != null) {
 			for(int i = 0; i < 27; i++) {
 				gui.setItem(i, (ItemStack) items.get(i));
@@ -52,7 +53,7 @@ public class AuctionChest {
 	}
 	
 	public boolean isEmpty(Player player) {
-		List<?> items = main.getCustomConfig().get().getList("auctionChestItems" + "." + player.getUniqueId());
+		List<?> items = main.getCustomConfig().get().getList(player.getUniqueId() + "." + "auctionChestItems");
 		if(items != null) {
 			for(Object o : items) {
 				ItemStack item = (ItemStack) o;
@@ -66,7 +67,7 @@ public class AuctionChest {
 	
 	public void deleteAuctionChest(Player player) {
 		//abbort in Auktionskiste
-		System.out.println(isEmpty(player));
+		isIntended = true;
 		for(int i = 0;  i < 27;i++) {
 			ItemStack item = player.getOpenInventory().getItem(i);
 			if(!(item == null)) {
@@ -78,27 +79,32 @@ public class AuctionChest {
 				}
 			}
 		}
-		main.getCustomConfig().get().set("auctionChestItems" + "." + player.getUniqueId(), null);
+		main.getCustomConfig().get().set(player.getUniqueId() + "." + "auctionChestItems", null);
 		main.getCustomConfig().saveConfig();
 		player.closeInventory();
+		isIntended = false;
 	}
 	
 	public void safeAuctionChest(Player player) {
+		isIntended = true;
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		for(int i = 0; i < 27; i++) {
 			items.add(player.getOpenInventory().getItem(i));
 		}
-		main.getCustomConfig().get().set("auctionChestItems" + "." + player.getUniqueId(), items);
+		main.getCustomConfig().get().set(player.getUniqueId() + "." + "auctionChestItems", items);
 		main.getCustomConfig().saveConfig();
 		player.closeInventory();
+		isIntended = false;
 	}
 	
 	public void forceSafeAuctionChest(Player player) {
+		if(isIntended) return;
+		if(isEmpty(player)) return;
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		for(int i = 0; i < 27; i++) {
 			items.add(player.getOpenInventory().getItem(i));
 		}
-		main.getCustomConfig().get().set("auctionChestItems" + "." + player.getUniqueId(), items);
+		main.getCustomConfig().get().set(player.getUniqueId() + "." + "auctionChestItems", items);
 		main.getCustomConfig().saveConfig();
 		player.sendMessage("Speichere deine Auktionskiste vorher!");
 	}

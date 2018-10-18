@@ -20,7 +20,9 @@ public class CustomConfig {
 			try {
 				f.createNewFile();
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.err.println("RESTART SERVER TO FIX THIS ERROR CAUSED BY UNSTABLE SPIGOT VERSION!");
+					main.getServer().broadcast("[AuctionHunter] Cannot be loaded caused unsable spigot version", "AuctionHunter.admin");
+					e.printStackTrace(); 
 				}
 	}
 	
