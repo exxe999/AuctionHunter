@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.exxe.AuctionHunter.AuctionHandler.Auction;
+import de.exxe.AuctionHunter.AuctionHandler.AuctionManager;
 import de.exxe.AuctionHunter.GUI.AuctionClaim;
 import de.exxe.AuctionHunter.GUI.StartGUI;
 import de.exxe.AuctionHunter.Main.Main;
@@ -15,9 +15,11 @@ public class Commands implements CommandExecutor {
 	
 	public Main main;
 	public StartGUI startGUI;
+	private AuctionManager auctionManager;
 	
 	public Commands(Main main) {
 		this.main = main;
+		auctionManager = main.getAuctionManager();
 	}
 
 	@Override
@@ -58,8 +60,19 @@ public class Commands implements CommandExecutor {
 		}
 		else if(cmd.getName().equalsIgnoreCase("bid")) {
 			if(args.length == 1) {
-				if(isNumeric(args[0])) main.getAuctionManager().getAuction().setHighestBid(player, Double.parseDouble(args[0]));
-				else player.sendMessage("Du musst eine Zahl angeben.");
+				if(!isNumeric(args[0])) {
+					player.sendMessage("Du musst eine Zahl angeben.");
+					
+				}else if(!auctionManager.isRunning) {
+					player.sendMessage("Es läuft keine Auktion! Starte eine mit /auktion start");
+				}
+//FOR TESTING MAKE THINGS EASIER!
+//				else if(auctionManager.getAuction().getSeller().equals(player)){
+//					player.sendMessage("Netter Versuch ;)");
+//				}
+				else {
+					main.getAuctionManager().getAuction().setHighestBid(player, Double.parseDouble(args[0]));
+				}
 				return true;
 			}else {
 				sender.sendMessage("fehler");

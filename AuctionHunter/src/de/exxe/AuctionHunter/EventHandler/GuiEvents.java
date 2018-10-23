@@ -63,6 +63,8 @@ public class GuiEvents implements Listener {
 				}else if(slot == 29 ||slot == 30 || slot == 38 ||slot == 39){
 					if(auctionChest.isEmpty(player)) {
 						player.sendMessage("Du brauchst eine Auktionskiste!");
+					}else if(main.getAuctionManager().isRunning) {
+						player.sendMessage("Es läuft bereits eine Auktion!");
 					}else {
 						main.getAuctionManager().startAuction(main, player);
 					}

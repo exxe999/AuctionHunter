@@ -8,6 +8,7 @@ public class AuctionManager {
 	
 	public Main main;
 	private Auction auction;
+	public boolean isRunning = false;
 	
 
 	public AuctionManager(Main main) {
